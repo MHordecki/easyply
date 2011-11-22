@@ -29,7 +29,7 @@ No mandratory whitespace surrounding colon sign
 Named parameters
 ----------------
 
-Instead of mutating and reading from the mysterious `p` parameters,
+Instead of mutating and reading the mysterious ``p`` parameter,
 easyply employs named parameters and return values. So::
 
   def px_rule(id):
@@ -45,7 +45,7 @@ is equivalent to::
     ...
     p[0] = retval
 
-You can also used custom names for parameters, just like this::
+You can also use custom names for parameters, just like this::
 
   def px_rule(foo):
     "production: {ID:foo}"
@@ -54,17 +54,17 @@ Optional symbols
 ----------------
 
 Instead of creating multiple similar rules differing only by a few symbols,
-you can consolidate them into one using `?` symbol. Observe::
+you can consolidate them into one using ``?`` symbol. Observe::
 
   def px_rule():
-  "production: symbol1 symbol2? symbol3"
-  ...
+    "production: symbol1 symbol2? symbol3"
+    ...
 
 Given this code, easyply will generate two functions with the
 same code and the following rules:
 
-  + `production: symbol1 symbol3`
-  + `production: symbol1 symbol2 symbol3`
+  + ``production: symbol1 symbol3``
+  + ``production: symbol1 symbol2 symbol3``
 
 This is especially powerful in conjunction with named parameters(note the parentheses)::
 
@@ -84,8 +84,8 @@ Installation
 Usage
 =====
 
-Basic usage is simple: Prefix all your easyply rules with `px_` prefix
-(instead of the usual `p_`) and call `easyply.process_all(globals())`
+Basic usage is simple: Prefix all your easyply rules with ``px_`` prefix
+(instead of the usual ``p_``) and call ``easyply.process_all(globals())``
 before creating your PLY parser. If your want more fine grained control,
 consult the API reference.
 
