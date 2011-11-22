@@ -1,4 +1,5 @@
 
+from __future__ import print_function
 from parser import parse as _parse
 from itertools import combinations
 from nodes import NamedTerm
@@ -22,7 +23,7 @@ def expand_conditionals(rule, format = True):
     else:
       ret.append(rule.select(subset))
 
-  return ret
+  return sorted(set(ret))
 
 def create_wrapper(rule, fn):
   if isinstance(rule, basestring):
@@ -42,6 +43,12 @@ def create_wrapper(rule, fn):
 
   return wrapper
 
+def format(rules):
+  if isinstance(rules, basestring):
+    rules = parse(rules)
+
+  return '\n'.join(rule.format() for rule in rules)
+
 def parse(defn):
   defn = [line.strip() for line in defn.split('\n') if line.strip()]
   return [_parse(line) for line in defn]
@@ -53,12 +60,12 @@ def process_function(fn):
   ret = {}
   i = 0
   for rule in expanded:
-    ret['%s_%s' % (fn.__name__, i)] = create_wrapper(rule, fn)
+    ret['p_%s_%s' % (fn.__name__, i)] = create_wrapper(rule, fn)
     i += 1
   return ret
 
-def process_all(globals):
-  names = [var for var in globals.keys() if var.startswith('p_')]
+def process_all(globals, prefix = 'px_'):
+  names = [var for var in globals.keys() if var.startswith(prefix)]
   funs = [globals[name] for name in names]
   for name in names:
     del globals[name]

@@ -6,4 +6,8 @@ setup(name='easyply',
       author='Mike Hordecki',
       author_email='mike@hordecki.com',
       packages=['easyply'],
+      long_description = open('README.rst').read(),
+      install_requires=[
+        "ply",
+        ]
       )
