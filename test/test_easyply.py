@@ -104,14 +104,17 @@ def test_process_all_with_class():
     def px_fn1(self): "r: g1 g2?"
     def p_skip_me(self): "r: g1 g2?"
     def skip_me(self): "r: g1 g2?"
+    px_skip_me = "r: g1 g2?"
   old_skip_me = MyClass.skip_me
   old_p_skip_me = MyClass.p_skip_me
+  old_px_skip_me = MyClass.px_skip_me
   process_all(MyClass)
   assert hasattr(MyClass, 'skip_me')
   assert hasattr(MyClass, 'p_skip_me')
   # Must use == to compare the methods instead of 'is' for some reason
   assert MyClass.skip_me == old_skip_me
   assert MyClass.p_skip_me == old_p_skip_me
+  assert MyClass.px_skip_me == old_px_skip_me
   assert hasattr(MyClass, 'p_px_fn1_0')
   assert hasattr(MyClass, 'p_px_fn1_1')
 
