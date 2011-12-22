@@ -18,7 +18,7 @@ Goodies
 
 Currently, there are three nice additions to the normal PLY syntax:
 
-No mandratory whitespace surrounding colon sign
+No mandatory whitespace surrounding colon sign
 -----------------------------------------------
 
 ::
