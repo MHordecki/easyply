@@ -30,7 +30,7 @@ class Rule(ComparisonMixin):
   def collect_conditionals(self):
     return self.terms.collect_conditionals()
 
-  def select(self, enabled_conditionals):
+  def select(self, enabled_conditionals = ()):
     return Rule(self.name, Terms(self.terms.select(enabled_conditionals)))
 
   def _cmpkey(self):

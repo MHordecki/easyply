@@ -121,13 +121,28 @@ def test_process_all_with_class():
   assert hasattr(MyClass, 'p_px_fn1_1')
 
 def test_exception_when_no_docstring():
-    def px_fn():
-        pass
-    globals_ = { 'px_fn': px_fn }
-    exception_raised = False
-    try:
-        process_all(globals_)
-    except NoDocstringError:
-        exception_raised = True
-    assert exception_raised
+  def px_fn():
+    pass
+  globals_ = { 'px_fn': px_fn }
+  exception_raised = False
+  try:
+    process_all(globals_)
+  except NoDocstringError:
+    exception_raised = True
+  assert exception_raised
+
+def test_exception_when_empty_docstring():
+  def px_fn():
+    ""
+    pass
+  globals_ = { 'px_fn': px_fn }
+  exception_raised = False
+  try:
+    process_all(globals_)
+  except NoDocstringError:
+    exception_raised = True
+  assert exception_raised
+
+
+  
 

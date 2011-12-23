@@ -84,10 +84,13 @@ Installation
 Usage
 =====
 
-Basic usage is simple: Prefix all your easyply rules with ``px_`` prefix
-(instead of the usual ``p_``) and call ``easyply.process_all(globals())``
-before creating your PLY parser. If your parser is a class, pass in the class.
-If you want more fine-grained control, consult the API reference.
+Basic usage is simple: Prefix all your easyply rules, except `p_error`,
+with ``px_`` prefix (instead of the usual ``p_``) and
+call ``easyply.process_all(globals())`` before creating your PLY parser.
+The parameter to `easyply.process_all` can be any mapping or class with parser
+functions - `process_all` will mutate the parameter and add appropriate
+PLY rules. If you want more fine-grained control, consult the API reference in
+the source itself.
 
 License
 =======
