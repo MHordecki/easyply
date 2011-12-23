@@ -21,7 +21,7 @@ def t_COMMENT(t):
   return None
 
 def t_error(a):
-  assert False
+  raise SyntaxError("ERROR: Unexpected '%s'" % a.value[0])
 
 t_ignore = ' \t'
 

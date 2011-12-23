@@ -18,7 +18,7 @@ Goodies
 
 Currently, there are three nice additions to the normal PLY syntax:
 
-No mandratory whitespace surrounding colon sign
+No mandatory whitespace surrounding colon sign
 -----------------------------------------------
 
 ::
@@ -86,8 +86,8 @@ Usage
 
 Basic usage is simple: Prefix all your easyply rules with ``px_`` prefix
 (instead of the usual ``p_``) and call ``easyply.process_all(globals())``
-before creating your PLY parser. If your want more fine grained control,
-consult the API reference.
+before creating your PLY parser. If your parser is a class, pass in the class.
+If you want more fine-grained control, consult the API reference.
 
 License
 =======

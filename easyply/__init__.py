@@ -4,6 +4,9 @@ from parser import parse as _parse
 from itertools import combinations
 from nodes import NamedTerm
 
+class NoDocstringError(Exception):
+    pass
+
 def expand_conditionals(rule, format = True):
   def all_subsets(set_):
     list_ = list(set_)
@@ -49,12 +52,17 @@ def format(rules):
 
   return '\n'.join(rule.format() for rule in rules)
 
-def parse(defn):
+def parse(defn, fname = None):
+  if defn is None:
+    if fname is not None:
+      raise NoDocstringError("Function %s has no docstring" % fname)
+    else:
+      raise NoDocstringError("Provided function has no docstring")
   defn = [line.strip() for line in defn.split('\n') if line.strip()]
   return [_parse(line) for line in defn]
 
 def process_function(fn):
-  rules = parse(fn.__doc__)
+  rules = parse(fn.__doc__, fname = fn.__name__)
   expanded = sum((expand_conditionals(rule, format = False) for rule in rules), [])
 
   ret = {}
@@ -65,13 +73,18 @@ def process_function(fn):
   return ret
 
 def process_all(globals, prefix = 'px_'):
-  names = [var for var in globals.keys() if var.startswith(prefix)]
-  funs = [globals[name] for name in names]
+  dict = globals.__dict__ if isinstance(globals, type) else globals
+  names = [name for name in dict if name.startswith(prefix) and callable(dict[name])]
+  funs = [dict[name] for name in names]
   for name in names:
-    del globals[name]
+    if isinstance(globals, type):
+      delattr(globals, name)
+    else:
+      del globals[name]
 
   for fn in funs:
     for name, wrapper in process_function(fn).items():
-      globals[name] = wrapper
-
-  
+      if isinstance(globals, type):
+        setattr(globals, name, wrapper)
+      else:
+        globals[name] = wrapper
