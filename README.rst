@@ -16,8 +16,6 @@ in order to use this library.
 Goodies
 =======
 
-Currently, there are three nice additions to the normal PLY syntax:
-
 No mandatory whitespace surrounding colon sign
 -----------------------------------------------
 
@@ -50,6 +48,9 @@ You can also use custom names for parameters, just like this::
   def px_rule(foo):
     "production: {ID:foo}"
 
+In case when the custom name is not provided, a lowercased name of
+the term is used.
+
 Optional symbols
 ----------------
 
@@ -73,6 +74,28 @@ This is especially powerful in conjunction with named parameters(note the parent
     return list + expression
 
 Neat, isn't it?
+
+OR operator
+-----------
+
+In addition, `easyply` offers OR operator for quick grouping of similar cases::
+
+  def px_expression():
+    """
+      expression: LPAREN expression RPAREN
+                | NUMBER
+                | REAL
+    """
+    ...
+
+The OR operator can be also used inline::
+
+  def px_list(expresion, list = ()):
+    "list: ({list} (COMMA|SEMICOLON))? {expresson}"
+    ...
+
+Note that OR has the lowest priority of all operators - hence the additional
+parentheses.
 
 Installation
 ============

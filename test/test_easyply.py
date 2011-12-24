@@ -1,36 +1,26 @@
 
-from easyply import expand_conditionals, create_wrapper, process_function, process_all, parse, format, NoDocstringError
-
-def assert_eq(a, b):
-  assert a == b, "%r != %r" % (a, b)
+from easyply import expand_optionals, create_wrapper, process_function, process_all, parse, NoDocstringError
 
 def assert_eq_list(a, b):
   a = sorted(a)
   b = sorted(b)
-  if not isinstance(a[0], basestring) and 0:
-    for i, (ai, bi) in enumerate(zip(a, b)):
-      print i, ai, bi, ai == bi
-    print a[0].terms.terms[0] == b[0].terms.terms[0]
-    print a[0].terms.terms
-    print b[0].terms.terms
-    print a[0].terms.terms == b[0].terms.terms
-    print [str(x) for x in a], [str(x) for x in b]
-  assert_eq(a, b)
+  assert a == b
 
 def assert_expand(rule, result):
-  assert_eq_list(expand_conditionals(rule), result)
-  assert_eq_list(expand_conditionals(rule, format = False), parse('\n'.join(result)))
+  assert_eq_list(expand_optionals(rule), result)
+  assert_eq_list(expand_optionals(rule, format = False), parse('\n'.join(result)))
 
 def test_printing():
   rule = parse('r: w1 (w1 {w2:name})?')[0]
-  assert_eq(str(rule), 'r: w1 (w1 {w2:name})?')
-  assert_eq(rule.format(), 'r : w1 w1 w2')
+  assert rule.format(pure_ply = False)  == 'r : w1 (w1 {w2:name})?'
+  assert rule.format(pure_ply = True) == 'r : w1 w1 w2'
+  assert rule.format() == 'r : w1 w1 w2'
   
 def test_expand():
-  assert_eq_list(expand_conditionals('r: g1 g2'), ('r : g1 g2', ))
-  assert_eq_list(expand_conditionals('r: g1 g2?'), ('r : g1', 'r : g1 g2'))
-  assert_eq_list(expand_conditionals('r: {g1:name}? g2'), ('r : g2', 'r : g1 g2'))
-  assert_eq_list(expand_conditionals('r: g1? g2?'), ('r :', 'r : g1', 'r : g1 g2', 'r : g2'))
+  assert_eq_list(expand_optionals('r: g1 g2'), ('r : g1 g2', ))
+  assert_eq_list(expand_optionals('r: g1 g2?'), ('r : g1', 'r : g1 g2'))
+  assert_eq_list(expand_optionals('r: {g1:name}? g2'), ('r : g2', 'r : g1 g2'))
+  assert_eq_list(expand_optionals('r: g1? g2?'), ('r :', 'r : g1', 'r : g1 g2', 'r : g2'))
   assert_expand('r: s? r s?', ('r : r', 'r : s r', 'r : r s', 'r : s r s'))
 
 def test_expand_parens():
@@ -43,28 +33,36 @@ def test_expand_nested():
       ('r : w1 w2', 'r : w1 r1 r2 w2', 'r : w1 r1 o1 r2 w2', 'r : w1 r1 r2 o2 w2',
         'r : w1 r1 o1 r2 o2 w2'))
 
+def test_expand_or():
+  assert_expand('r: w1 | w2',
+      ('r : w1', 'r : w2'))
+  assert_expand('r: w1 (w2 | w3) w4 | w5 w6',
+      ('r : w1 w2 w4', 'r : w1 w3 w4', 'r : w5 w6'))
+  assert_expand('r: w1 w2 | w3 | w4 w5 | w6',
+      ('r : w1 w2', 'r : w3', 'r : w4 w5', 'r : w6'))
+
 def test_wrapping():
   called = [False]
   def fn1(arg1):
     "r : {g1:arg1} g2"
-    assert_eq(arg1, 'hello!')
+    assert arg1 == 'hello!'
     called[0] = True
   
   wrapper = create_wrapper(fn1.__doc__, fn1)
   wrapper([None, 'hello!'])
-  assert_eq(wrapper.__doc__, 'r : g1 g2')
+  assert wrapper.__doc__ == 'r : g1 g2'
   assert called[0]
 
 def test_wrapping_in_group():
   called = [False]
   def fn1(arg):
     "r : w1 ({g1:arg} g2)"
-    assert_eq(arg, 'hello!')
+    assert arg == 'hello!'
     called[0] = True
   
   wrapper = create_wrapper(fn1.__doc__, fn1)
   wrapper([None, 'foo', 'hello!', 'bar'])
-  assert_eq(wrapper.__doc__, 'r : w1 g1 g2')
+  assert wrapper.__doc__ == 'r : w1 g1 g2'
   assert called[0]
 
 def test_process_function():
@@ -72,7 +70,7 @@ def test_process_function():
     "r : g1 g2?"
   
   functions = process_function(fn1)
-  assert_eq(len(functions), 2)
+  assert len(functions) == 2
 
 def test_process_function_many_rules():
   def fn2():
@@ -82,7 +80,7 @@ def test_process_function_many_rules():
     """
   
   functions = process_function(fn2)
-  assert_eq(len(functions), 3)
+  assert len(functions) == 3
 
 def test_process_all():
   def px_fn1(): "r: g1 g2?"
@@ -91,7 +89,7 @@ def test_process_all():
 
   globals_ = {'px_fn1': px_fn1, 'p_skip_me': p_skip_me, 'skip_me': skip_me}
   process_all(globals_)
-  assert_eq(len(globals_), 4)
+  assert len(globals_) == 4
   assert 'skip_me' in globals_
   assert 'p_skip_me' in globals_
   assert globals_['skip_me'] is skip_me
@@ -143,6 +141,60 @@ def test_exception_when_empty_docstring():
     exception_raised = True
   assert exception_raised
 
+def test_two_rules():
+  rule = """ r1: SYM1 SYM2
+  r2: SYM2 SYM3"""
 
-  
+  parsed = parse(rule)
+
+  assert len(parsed) == 2
+  assert parsed[0].format() == 'r1 : SYM1 SYM2'
+  assert parsed[1].format() == 'r2 : SYM2 SYM3'
+
+def test_multiline_rule():
+  rule = """ production: SYM1 SYM2
+  SYM3 SYM4
+  """
+
+  parsed = parse(rule)
+
+  assert len(parsed) == 1
+  assert parsed[0].format() == 'production : SYM1 SYM2 SYM3 SYM4'
+
+def test_multiline_rule_with_another_rule():
+  rule = """ production: SYM1 SYM2
+  SYM3 SYM4
+  production2: S1 S2
+  """
+
+  parsed = parse(rule)
+
+  assert len(parsed) == 2
+  assert parsed[0].format() == 'production : SYM1 SYM2 SYM3 SYM4'
+  assert parsed[1].format() == 'production2 : S1 S2'
+
+"""
+In the future, maybe...
+def test_multiline_rule_crazy_cornercase():
+  rule = " "" production: SYM1 SYM2 {
+             foo:        bar} SYM3
+             production2: S1 S2
+  "" "
+
+  parsed = parse(rule)
+
+  assert len(parsed) == 2
+  assert parsed[0].format() == 'production : SYM1 SYM2 foo SYM4'
+  assert parsed[1].format() == 'production2 : S1 S2'
+"""
+
+def test_multirule():
+  rule = """production: SYM1 SYM2
+                  | SYM2 SYM2 SYM2"""
+
+  parsed = parse(rule)
+
+  assert len(parsed) == 1
+  assert parsed[0].format(pure_ply = False) == 'production : SYM1 SYM2 | SYM2 SYM2 SYM2'
+
 
