@@ -36,7 +36,7 @@ def t_COMMENT(t):
   return None
 
 def t_error(a):
-  raise SyntaxError("ERROR: Unexpected '%s'" % a.value[0])
+  raise SyntaxError("ERROR: Unexpected %r '%s'" % (a, a.value[0]))
 
 t_ignore = ' \t\n'
 
@@ -79,7 +79,7 @@ def p_term(p):
 def p_term_literal(p):
   "term : ID"
   p[0] = Term(p[1])
-  
+
 def p_term_parens(p):
   "term : PAREN_BEGIN or_terms PAREN_END"
   p[0] = p[2]
@@ -111,7 +111,7 @@ def split_rules(tokens):
   """
     Takes a sequence of tokens representing a ruleset and splits
     them into a list of token sequences, each representing a
-    single rule (purpotedly). 
+    single rule (purpotedly).
 
     Algorithm overview:
       1. We process the stream token by token, pushing them to an internal buffer.
@@ -129,7 +129,7 @@ def split_rules(tokens):
     token.lineno = old_token.lineno
     token.lexpos = old_token.lexpos
     return token
-  
+
   def match_suffix(buffer, tokens):
     if len(buffer) < len(tokens):
       return False
@@ -173,7 +173,7 @@ class TokenStream:
       return None
 
 lexer = lex()
-parser = yacc(picklefile = 'easyply.tab') #FIXME: rename parsetab
+parser = yacc(picklefile = 'easyply.tab', tabmodule = 'easyplytab')
 
 def parse(text):
   lexer.input(text)

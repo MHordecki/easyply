@@ -16,7 +16,7 @@ accept either:
     + list of Rule objects, passed as-is
     + string, parsed by `parser.parse` into a list of Rule objects
     + list of strings, each parsed by `parser.parse`
-  + rule, which is a simply a ruleset containing one Rule object. It's 
+  + rule, which is a simply a ruleset containing one Rule object. It's
     coerced in the same way as the ruleset case and then checked
     for length. In case of length different than 1, `SingleRuleExpectedError`
     is raised.
@@ -24,7 +24,9 @@ accept either:
 
 from parser import parse as _parse
 from itertools import combinations, chain
+from functools import wraps
 from nodes import NamedTerm
+from types import MethodType
 
 class NoDocstringError(Exception):
     pass
@@ -38,7 +40,7 @@ def _coerce_to_ruleset(ruleset):
       return _parse(rule)
     else:
       return (rule, )
-  
+
   if not isinstance(ruleset, (list, tuple)):
     ruleset = (ruleset, )
 
@@ -85,6 +87,7 @@ def create_wrapper(rule, fn):
   # flattening - we need to iterate over rule terms
   rule = rule.flatten()
 
+  @wraps(fn)
   def wrapper(p):
     kwargs = {}
     # named parameters extraction
@@ -92,7 +95,7 @@ def create_wrapper(rule, fn):
       if isinstance(term, NamedTerm):
         kwargs[term.name] = p[i+1]
     p[0] = fn(**kwargs)
-  
+
   wrapper.__doc__ = rule.format(pure_ply = True)
 
   return wrapper
@@ -115,7 +118,7 @@ def process_function(fn):
     Takes a function with easyply defintion stored in the docstring and
     returns a dictionary of corresponding PLY-compatible functions.
   """
-  
+
   ruleset = parse(fn.__doc__, fname = fn.__name__)
   expanded = expand_optionals(ruleset, format = False)
 
@@ -132,20 +135,21 @@ def process_all(globals, prefix = 'px_'):
     (`px_` by default). `process_all` accepts either a dictionary or a class and
     updates it with new functions.
   """
-   
-  dict = globals.__dict__ if isinstance(globals, type) else globals
-  names = [name for name in dict if name.startswith(prefix) and callable(dict[name])]
-  funs = [dict[name] for name in names]
-  for name in names:
-    if isinstance(globals, type):
-      delattr(globals, name)
-    else:
-      del globals[name]
 
-  for fn in funs:
-    for name, wrapper in process_function(fn).items():
-      if isinstance(globals, type):
-        setattr(globals, name, wrapper)
-      else:
+  if isinstance(globals, dict):
+    names = [name for name in globals
+             if name.startswith(prefix) and callable(globals[name])]
+    for name in names:
+      fn = globals[name]
+      for name, wrapper in process_function(fn).items():
         globals[name] = wrapper
+  else:
+    # is an object
+    names = [name for name in dir(globals)
+             if name.startswith(prefix) and callable(getattr(globals, name))]
+    for name in names:
+      fn = getattr(globals, name)
+      for name, wrapper in process_function(fn).items():
+        setattr(globals, name, wrapper)
+
 

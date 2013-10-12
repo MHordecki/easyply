@@ -15,7 +15,7 @@ def test_printing():
   assert rule.format(pure_ply = False)  == 'r : w1 (w1 {w2:name})?'
   assert rule.format(pure_ply = True) == 'r : w1 w1 w2'
   assert rule.format() == 'r : w1 w1 w2'
-  
+
 def test_expand():
   assert_eq_list(expand_optionals('r: g1 g2'), ('r : g1 g2', ))
   assert_eq_list(expand_optionals('r: g1 g2?'), ('r : g1', 'r : g1 g2'))
@@ -47,7 +47,7 @@ def test_wrapping():
     "r : {g1:arg1} g2"
     assert arg1 == 'hello!'
     called[0] = True
-  
+
   wrapper = create_wrapper(fn1.__doc__, fn1)
   wrapper([None, 'hello!'])
   assert wrapper.__doc__ == 'r : g1 g2'
@@ -59,7 +59,7 @@ def test_wrapping_in_group():
     "r : w1 ({g1:arg} g2)"
     assert arg == 'hello!'
     called[0] = True
-  
+
   wrapper = create_wrapper(fn1.__doc__, fn1)
   wrapper([None, 'foo', 'hello!', 'bar'])
   assert wrapper.__doc__ == 'r : w1 g1 g2'
@@ -68,7 +68,7 @@ def test_wrapping_in_group():
 def test_process_function():
   def fn1():
     "r : g1 g2?"
-  
+
   functions = process_function(fn1)
   assert len(functions) == 2
 
@@ -78,7 +78,7 @@ def test_process_function_many_rules():
     r : g1 g2?
     r : g3
     """
-  
+
   functions = process_function(fn2)
   assert len(functions) == 3
 
@@ -89,7 +89,8 @@ def test_process_all():
 
   globals_ = {'px_fn1': px_fn1, 'p_skip_me': p_skip_me, 'skip_me': skip_me}
   process_all(globals_)
-  assert len(globals_) == 4
+  assert len(globals_) == 5
+  assert 'px_fn1' in globals_
   assert 'skip_me' in globals_
   assert 'p_skip_me' in globals_
   assert globals_['skip_me'] is skip_me
@@ -196,5 +197,4 @@ def test_multirule():
 
   assert len(parsed) == 1
   assert parsed[0].format(pure_ply = False) == 'production : SYM1 SYM2 | SYM2 SYM2 SYM2'
-
 

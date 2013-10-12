@@ -118,7 +118,7 @@ class NamedTerm(ComparisonMixin):
   def __init__(self, parser_term, name):
     self.parser_term = parser_term
     self.name = name
-  
+
   def format(self, pure_ply = True):
     if pure_ply:
       return self.parser_term
@@ -134,7 +134,7 @@ class NamedTerm(ComparisonMixin):
 class Term(ComparisonMixin):
   def __init__(self, parser_term):
     self.parser_term = parser_term
-  
+
   def format(self, pure_ply = True): return self.parser_term
   def expand_optionals(self): return (self, )
   def flatten(self): return (self, )

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name = 'easyply',
-      version = '1.1',
+      version = '1.2',
       description = 'Helper functions for PLY (Python Lex & Yacc)',
       url = 'https://github.com/MHordecki/easyply',
       author = 'Mike Hordecki',
