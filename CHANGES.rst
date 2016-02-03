@@ -1,6 +1,13 @@
 Changes
 =======
 
+1.2.1 (2016-02-03)
+  + Use relative imports, so user modules named parser won't cause easyply to
+    barf.
+  + Suppress warnings from PLY.
+  + Python 3 compatability.
+  + Support literals (single-quoted characters in yacc grammar fragments)
+
 1.2 (2013-10-12)
   + Fixed Issue #2
   + `easyply.process_all` no longer removes `px_` functions from the environment.
