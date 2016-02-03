@@ -36,7 +36,11 @@ class SingleRuleExpectedError(Exception):
 
 def _coerce_to_ruleset(ruleset):
   def coerce_to_rule(rule):
-    if isinstance(rule, basestring):
+    try:
+      isstr = isinstance(rule, basestring)
+    except NameError:
+      isstr = isinstance(rule, str) # python3
+    if isstr:
       return _parse(rule)
     else:
       return (rule, )
