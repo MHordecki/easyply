@@ -13,6 +13,8 @@ I'm clearly not an expert when it comes to LALR, so if anyone
 knows how to do it with LALR(1) in an elegant way, drop me a line.
 """
 
+import logging
+
 from ply.lex import lex, LexToken
 from ply.yacc import yacc
 
@@ -172,8 +174,12 @@ class TokenStream:
     except StopIteration:
       return None
 
-lexer = lex()
-parser = yacc(picklefile = 'easyply.tab', tabmodule = 'easyplytab')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+
+lexer = lex(errorlog = logger)
+parser = yacc(picklefile = 'easyply.tab', tabmodule = 'easyplytab',
+              errorlog = logger)
 
 def parse(text):
   lexer.input(text)
