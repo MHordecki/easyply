@@ -24,6 +24,7 @@ from .nodes import Rule, Term, OptionalTerm, NamedTerm, Terms, OrTerm
 t_ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_COLON = r':'
 
+t_LIT = r"'.'"
 t_PAREN_BEGIN = r'\('
 t_PAREN_END = r'\)'
 t_CURLY_BEGIN = r'{'
@@ -78,8 +79,12 @@ def p_term(p):
   """
   p[0] = p[1]
 
-def p_term_literal(p):
+def p_term_id(p):
   "term : ID"
+  p[0] = Term(p[1])
+
+def p_term_lit(p):
+  "term : LIT"
   p[0] = Term(p[1])
 
 def p_term_parens(p):
