@@ -22,10 +22,10 @@ accept either:
     is raised.
 """
 
-from parser import parse as _parse
+from .parser import parse as _parse
 from itertools import combinations, chain
 from functools import wraps
-from nodes import NamedTerm
+from .nodes import NamedTerm
 from types import MethodType
 
 class NoDocstringError(Exception):

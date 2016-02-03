@@ -16,7 +16,7 @@ knows how to do it with LALR(1) in an elegant way, drop me a line.
 from ply.lex import lex, LexToken
 from ply.yacc import yacc
 
-from nodes import Rule, Term, OptionalTerm, NamedTerm, Terms, OrTerm
+from .nodes import Rule, Term, OptionalTerm, NamedTerm, Terms, OrTerm
 
 
 t_ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
