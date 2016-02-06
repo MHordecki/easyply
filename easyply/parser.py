@@ -123,7 +123,7 @@ def split_rules(tokens):
   """
     Takes a sequence of tokens representing a ruleset and splits
     them into a list of token sequences, each representing a
-    single rule (purpotedly).
+    single rule (purportedly).
 
     Algorithm overview:
       1. We process the stream token by token, pushing them to an internal buffer.
