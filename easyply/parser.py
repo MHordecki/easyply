@@ -18,7 +18,8 @@ import logging
 from ply.lex import lex, LexToken
 from ply.yacc import yacc
 
-from .nodes import Rule, Term, OptionalTerm, NamedTerm, Terms, OrTerm
+from .nodes import Rule, Term, OptionalTerm, NamedTerm, \
+        Terms, OrTerm, EmptyTerm
 
 
 t_ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -90,6 +91,10 @@ def p_term_lit(p):
 def p_term_parens(p):
   "term : PAREN_BEGIN or_terms PAREN_END"
   p[0] = p[2]
+
+def p_term_empty(p):
+  "terms : "
+  p[0] = EmptyTerm()
 
 def p_or_term(p):
   "or_term : terms VBAR terms"
