@@ -22,7 +22,7 @@ No mandatory whitespace surrounding colon sign
 ::
 
   def px_rule():
-    "production: SYMBOL
+    "production: SYMBOL"
 
 Named parameters
 ----------------
@@ -31,7 +31,7 @@ Instead of mutating and reading the mysterious ``p`` parameter,
 easyply employs named parameters and return values. So::
 
   def px_rule(id):
-    "production: {ID}
+    "production: {ID}"
     ...
     return retval
 
@@ -120,7 +120,7 @@ License
 
 This library is licensed under the MIT License.
 
-Copyright © 2011 by Mike Hordecki
+Copyright © 2011 by Mike Hordecki and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
