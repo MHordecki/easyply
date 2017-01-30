@@ -142,3 +142,10 @@ class Term(ComparisonMixin):
   def _cmpkey(self):
     return (type(self), self.parser_term)
 
+class EmptyTerm(ComparisonMixin):
+  def format(self, pure_ply = True): return ""
+  def expand_optionals(self): return (self, )
+  def flatten(self): return (self, )
+
+  def _cmpkey(self):
+    return (type(self), "")

@@ -22,10 +22,10 @@ accept either:
     is raised.
 """
 
-from parser import parse as _parse
+from .parser import parse as _parse
 from itertools import combinations, chain
 from functools import wraps
-from nodes import NamedTerm
+from .nodes import NamedTerm
 from types import MethodType
 
 class NoDocstringError(Exception):
@@ -36,7 +36,11 @@ class SingleRuleExpectedError(Exception):
 
 def _coerce_to_ruleset(ruleset):
   def coerce_to_rule(rule):
-    if isinstance(rule, basestring):
+    try:
+      isstr = isinstance(rule, basestring)
+    except NameError:
+      isstr = isinstance(rule, str) # python3
+    if isstr:
       return _parse(rule)
     else:
       return (rule, )

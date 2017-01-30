@@ -13,15 +13,19 @@ I'm clearly not an expert when it comes to LALR, so if anyone
 knows how to do it with LALR(1) in an elegant way, drop me a line.
 """
 
+import logging
+
 from ply.lex import lex, LexToken
 from ply.yacc import yacc
 
-from nodes import Rule, Term, OptionalTerm, NamedTerm, Terms, OrTerm
+from .nodes import Rule, Term, OptionalTerm, NamedTerm, \
+        Terms, OrTerm, EmptyTerm
 
 
 t_ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_COLON = r':'
 
+t_LIT = r"'.'"
 t_PAREN_BEGIN = r'\('
 t_PAREN_END = r'\)'
 t_CURLY_BEGIN = r'{'
@@ -76,13 +80,21 @@ def p_term(p):
   """
   p[0] = p[1]
 
-def p_term_literal(p):
+def p_term_id(p):
   "term : ID"
+  p[0] = Term(p[1])
+
+def p_term_lit(p):
+  "term : LIT"
   p[0] = Term(p[1])
 
 def p_term_parens(p):
   "term : PAREN_BEGIN or_terms PAREN_END"
   p[0] = p[2]
+
+def p_term_empty(p):
+  "terms : "
+  p[0] = EmptyTerm()
 
 def p_or_term(p):
   "or_term : terms VBAR terms"
@@ -111,7 +123,7 @@ def split_rules(tokens):
   """
     Takes a sequence of tokens representing a ruleset and splits
     them into a list of token sequences, each representing a
-    single rule (purpotedly).
+    single rule (purportedly).
 
     Algorithm overview:
       1. We process the stream token by token, pushing them to an internal buffer.
@@ -172,8 +184,12 @@ class TokenStream:
     except StopIteration:
       return None
 
-lexer = lex()
-parser = yacc(picklefile = 'easyply.tab', tabmodule = 'easyplytab')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+
+lexer = lex(errorlog = logger)
+parser = yacc(picklefile = 'easyply.tab', tabmodule = 'easyplytab',
+              errorlog = logger)
 
 def parse(text):
   lexer.input(text)
